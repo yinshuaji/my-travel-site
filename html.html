@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>我的旅行时间线</title>
+  <meta name="description" content="按时间记录我的旅行足迹：日期、地区与照片。"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='80'>🗺️</text></svg>">
+  <style>
+    :root{
+      --bg:#0d1117; --bg2:#0a0f1a; --card:#111827; --fg:#e6edf3; --muted:#9fb0c9;
+      --accent:#7aa2ff; --accent2:#9fe6a0; --border:rgba(255,255,255,.08);
+      --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35); --focus:0 0 0 3px rgba(122,162,255,.35);
+    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      color:var(--fg);
+      background:
+        radial-gradient(900px 600px at 20% 0%, #182147 0%, transparent 60%),
+        radial-gradient(800px 500px at 100% 0%, #1b2a58 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      line-height:1.75;
+    }
+    a{color:var(--accent); text-decoration:none}
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{outline:none; box-shadow:var(--focus); border-radius:10px}
+    img{max-width:100%; display:block}
+    .container{max-width:980px; margin:0 auto; padding:0 20px}
+    .card{background:linear-gradient(180deg,#111a33,#0f172b); border:1px solid var(--border);
+          border-radius:var(--radius); box-shadow:var(--shadow)}
+    .btn{display:inline-block; padding:8px 12px; border:1px solid var(--border); border-radius:12px; background:#0f1830; color:#d9e2ef; cursor:pointer}
+    .btn.ghost{background:#0c1329}
+    .chip{padding:6px 10px; border:1px solid var(--border); border-radius:999px; background:#101a33; color:#d8e3f3; cursor:pointer}
+    .chip.active{background:#1a2a4a}
+
+    .skip{position:absolute; left:-9999px}
+    .skip:focus{left:20px; top:12px; background:#121a2f; padding:8px 12px; border-radius:10px; z-index:1100}
+
+    header{position:sticky; top:0; z-index:50; backdrop-filter: blur(8px); background: rgba(8,12,24,.6); border-bottom:1px solid var(--border)}
+    .nav{display:flex; align-items:center; justify-content:space-between; height:64px}
+    .brand{display:flex; align-items:center; gap:10px; font-weight:700}
+    .logo{width:28px; height:28px; display:grid; place-items:center; background:linear-gradient(135deg,#7aa2ff,#9fe6a0); color:#0b1020; border-radius:8px; font-weight:900}
+
+    .hero{padding:80px 0 20px}
+    .hero h1{margin:0 0 8px; font-size: clamp(28px, 6vw, 48px)}
+    .hero p{margin:0; color:var(--muted)}
+
+    .toolbar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:16px 0}
+    .subbar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:-8px 0 10px 0}
+    .input{padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:#0f1528; color:#dbe6f7}
+
+    /* 横向时间轴 */
+    .year-rail-wrap{position:sticky; top:64px; z-index:5; background:rgba(8,12,24,.7); backdrop-filter: blur(8px);
+      border-bottom:1px solid var(--border)}
+    .year-rail{display:flex; gap:8px; overflow-x:auto; padding:10px 0}
+    .year-pill{white-space:nowrap; padding:6px 10px; border:1px solid var(--border); border-radius:999px; background:#0f172b; color:#cfe1ff; cursor:pointer}
+    .year-pill.active{background:#1a2a4a}
+
+    /* 纵向时间线 */
+    .timeline{position:relative; padding:6px 0 30px}
+    .timeline::before{content:''; position:absolute; left:18px; top:0; bottom:0; width:2px; background:linear-gradient(180deg,#27325a,#1a2244)}
+    .year{position:relative; margin:16px 0 8px; display:inline-block; padding:6px 12px; border:1px solid var(--border); border-radius:999px; background:#0f172b; color:#cfe1ff}
+    .entry{position:relative; margin:12px 0 16px; padding:14px 14px 12px 54px; border:1px solid var(--border)}
+    .entry::before{content:''; position:absolute; left:10px; top:18px; width:16px; height:16px; border-radius:50%; background:linear-gradient(135deg,#7aa2ff,#9fe6a0); box-shadow:0 0 0 4px rgba(122,162,255,.15)}
+    .entry h3{margin:0 0 6px; font-size:20px}
+    .meta{color:#9fb0c9; font-size:13px; margin-bottom:8px}
+    .thumb{overflow:hidden; border-radius:12px; border:1px solid var(--border); aspect-ratio: 16/10; background:#0e1630}
+    .thumb img{width:100%; height:100%; object-fit:cover}
+
+    dialog{border:none; padding:0; border-radius:14px; overflow:hidden; background:#0b0f1c}
+    .lightbox img{display:block; width:100%; height:auto}
+    .lightbox .bar{display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#0f172b; border-bottom:1px solid var(--border)}
+    .close{background:#0e1630; color:#e6edf3; border:1px solid var(--border); border-radius:8px; padding:6px 10px; cursor:pointer}
+
+    footer{padding:28px 0; color:#9fb0c9; border-top:1px solid var(--border)}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">跳到主内容</a>
+
+  <header>
+    <div class="container nav" aria-label="主导航">
+      <div class="brand"><div class="logo" aria-hidden="true">✦</div><span>我的旅行时间线</span></div>
+      <nav aria-label="辅助链接">
+        <a class="btn" id="exportBtn" title="导出数据">导出</a>
+        <label class="btn ghost" for="importFile" title="导入数据">导入</label>
+        <input id="importFile" type="file" accept="application/json" style="display:none" />
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container">
+        <h1>按时间记录我的旅行</h1>
+        <p>仅区分“国内 / 国外”。国内支持按省份精确筛选；点击下方时间轴可跳转到对应年份。</p>
+      </div>
+    </section>
+
+    <!-- 工具栏 -->
+    <section class="container">
+      <div class="toolbar">
+        <strong>年份：</strong>
+        <select id="yearSel" class="input">
+          <option value="all">全部年份</option>
+        </select>
+
+        <strong>范围：</strong>
+        <div id="scopeWrap" style="display:flex; gap:8px; flex-wrap:wrap"></div>
+
+        <input id="q" class="input" style="flex:1; min-width:200px" placeholder="搜索：标题 / 备注 / 省份 / 国家"/>
+      </div>
+
+      <!-- 仅在 scope=国内 时显示 -->
+      <div class="subbar" id="provBar" hidden>
+        <strong>省份：</strong>
+        <div id="provWrap" style="display:flex; gap:8px; flex-wrap:wrap"></div>
+      </div>
+    </section>
+
+    <!-- 横向时间轴 -->
+    <div class="year-rail-wrap">
+      <div class="container">
+        <div id="yearRail" class="year-rail" role="tablist" aria-label="年份时间轴">
+          <!-- JS 渲染年份 pill -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 纵向时间线 -->
+    <section class="container timeline card" id="timeline" aria-label="旅行时间线"></section>
+
+    <!-- 图片灯箱 -->
+    <dialog class="lightbox" id="dlg" aria-label="图片预览">
+      <div class="bar">
+        <span>按 Esc 关闭；左右方向键切换</span>
+        <button class="close" id="closeBtn" aria-label="关闭预览">关闭</button>
+      </div>
+      <img id="big" alt="图片预览">
+    </dialog>
+  </main>
+
+  <footer>
+    <div class="container" style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap">
+      <span>© <span id="year"></span> 你的名字</span>
+      <span>时间线 · 国内/国外 + 省份筛选 · 年份跳转</span>
+    </div>
+  </footer>
+
+  <script>
+    // 年份
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ==== 1) 旅行数据（已移除 location 与 tags）====
+    // 必填：id, date(YYYY-MM-DD), title, scope('国内'|'国外')
+    // 可选：province(仅国内), country(仅国外), cover, gallery[], note
+    const TRIPS = [
+      { id:"2024-chengdu", date:"2024-10-03", title:"成都的慢下午", scope:"国内", province:"四川", cover:"assets/chengdu.jpg", gallery:["assets/chengdu1.jpg"], note:"在巷口闻到花椒与雨味。" },
+      { id:"2024-qingdao", date:"2024-07-18", title:"青岛海风",     scope:"国内", province:"山东", cover:"assets/qingdao.jpg", gallery:["assets/qingdao1.jpg","assets/qingdao2.jpg"] },
+      { id:"2023-tokyo",   date:"2023-04-12", title:"春日东京与镰仓", scope:"国外", country:"日本", cover:"assets/tokyo.jpg", gallery:["assets/tokyo1.jpg","assets/tokyo2.jpg"] },
+      { id:"2022-alps",    date:"2022-07-21", title:"阿尔卑斯徒步",   scope:"国外", country:"瑞士", cover:"assets/alps.jpg", gallery:["assets/alps1.jpg","assets/alps2.jpg","assets/alps3.jpg"] }
+    ];
+
+    // ==== 2) 状态 ====
+    const state = { year:'all', scope:'全部', province:'全部', q:'' };
+
+    const yearSel = document.getElementById('yearSel');
+    const scopeWrap = document.getElementById('scopeWrap');
+    const provBar = document.getElementById('provBar');
+    const provWrap = document.getElementById('provWrap');
+    const yearRail = document.getElementById('yearRail');
+
+    // 年份列表
+    const years = Array.from(new Set(TRIPS.map(t=>t.date.slice(0,4)))).sort((a,b)=>b-a);
+    years.forEach(y=>{ const opt=document.createElement('option'); opt.value=y; opt.textContent=y; yearSel.appendChild(opt); });
+
+    // 范围芯片
+    ['全部','国内','国外'].forEach(s=>{
+      const b=document.createElement('button');
+      b.className='chip'+(s==='全部'?' active':'');
+      b.textContent=s; b.dataset.scope=s;
+      scopeWrap.appendChild(b);
+    });
+
+    // 省份芯片
+    function buildProvinces(){
+      provWrap.innerHTML='';
+      const set = new Set(['全部']);
+      TRIPS.filter(t=>t.scope==='国内' && t.province).forEach(t=>set.add(t.province));
+      Array.from(set).forEach(p=>{
+        const b=document.createElement('button');
+        b.className='chip'+(p==='全部'?' active':'');
+        b.textContent=p; b.dataset.province=p; provWrap.appendChild(b);
+      });
+    }
+    buildProvinces();
+
+    // 横向时间轴 pills
+    function buildYearRail(){
+      yearRail.innerHTML='';
+      years.forEach(y=>{
+        const a=document.createElement('button');
+        a.className='year-pill';
+        a.textContent=y; a.dataset.year=y; a.setAttribute('role','tab');
+        yearRail.appendChild(a);
+      });
+    }
+    buildYearRail();
+
+    // ==== 3) 交互 ====
+    document.getElementById('q').addEventListener('input', (e)=>{ state.q=(e.target.value||'').toLowerCase().trim(); render(); });
+    yearSel.addEventListener('change', ()=>{ state.year=yearSel.value; render(true); });
+    scopeWrap.addEventListener('click', (e)=>{
+      const btn=e.target.closest('button.chip'); if(!btn) return;
+      scopeWrap.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+      btn.classList.add('active'); state.scope=btn.dataset.scope;
+      const showProv = state.scope==='国内';
+      provBar.hidden = !showProv;
+      state.province='全部';
+      if(showProv){
+        provWrap.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+        const first = provWrap.querySelector('[data-province="全部"]'); if(first) first.classList.add('active');
+      }
+      render(true);
+    });
+    provWrap.addEventListener('click', (e)=>{
+      const btn=e.target.closest('button.chip'); if(!btn) return;
+      provWrap.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+      btn.classList.add('active'); state.province=btn.dataset.province;
+      render(true);
+    });
+
+    // 时间轴点击跳转
+    yearRail.addEventListener('click', (e)=>{
+      const btn=e.target.closest('button.year-pill'); if(!btn) return;
+      const targetYear = btn.dataset.year;
+      const anchor = document.querySelector(`[data-year-anchor="${targetYear}"]`);
+      if(anchor){ anchor.scrollIntoView({behavior:'smooth', block:'start'}); }
+    });
+
+    function filterTrips(list){
+      return list.filter(t=>{
+        const yOk = state.year==='all' || t.date.startsWith(state.year);
+        const sOk = state.scope==='全部' || t.scope===state.scope;
+        const pOk = !(state.scope==='国内') || state.province==='全部' || t.province===state.province;
+        const hay = (t.title+' '+(t.note||'')+' '+(t.province||'')+' '+(t.country||'')).toLowerCase();
+        const qOk = !state.q || hay.includes(state.q);
+        return yOk && sOk && pOk && qOk;
+      });
+    }
+
+    // ==== 4) 渲染 ====
+    function render(rebuildAnchors=false){
+      const wrap = document.getElementById('timeline');
+      wrap.innerHTML='';
+      const data = filterTrips([...TRIPS]).sort((a,b)=> b.date.localeCompare(a.date));
+      if(data.length===0){
+        const empty=document.createElement('p'); empty.style.color='var(--muted)'; empty.style.margin='16px';
+        empty.textContent='没有匹配的旅行记录。试试更换筛选或关键词。'; wrap.appendChild(empty); return;
+      }
+      let curYear=null;
+      data.forEach(t=>{
+        const y=t.date.slice(0,4);
+        if(curYear!==y){
+          curYear=y;
+          const tag=document.createElement('div'); tag.className='year'; tag.textContent=y;
+          tag.setAttribute('data-year-anchor', y); // 供时间轴跳转
+          wrap.appendChild(tag);
+        }
+        const metaPieces = [
+          `<time datetime="${t.date}">${t.date}</time>`,
+          t.scope==='国内' ? `国内·${t.province||'未填省份'}` : `国外${t.country ? '·'+t.country : ''}`
+        ];
+        const art=document.createElement('article'); art.className='entry card';
+        art.innerHTML = `
+          <div class="meta">${metaPieces.join(' · ')}</div>
+          <h3>${t.title}</h3>
+          <div class="thumb"><img src="${t.cover||''}" alt="${t.title} 封面" loading="lazy"></div>
+          ${t.note ? `<p style="margin-top:8px">${t.note}</p>` : ''}
+          <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+            <button class="btn" data-view="${t.id}">查看照片（${(t.gallery||[]).length || 1}）</button>
+          </div>
+        `;
+        wrap.appendChild(art);
+      });
+
+      if(rebuildAnchors){ updateYearRailActive(); }
+    }
+    render(true);
+
+    // ==== 5) 时间轴滚动高亮（IntersectionObserver）====
+    const yearAnchors = () => Array.from(document.querySelectorAll('[data-year-anchor]'));
+    function updateYearRailActive(activeYear){
+      const pills = Array.from(yearRail.querySelectorAll('.year-pill'));
+      pills.forEach(p=>p.classList.toggle('active', p.dataset.year===activeYear));
+    }
+    const io = new IntersectionObserver(entries=>{
+      // 找到最靠上的可见年份
+      const visible = entries.filter(e=>e.isIntersecting).sort((a,b)=> a.boundingClientRect.top - b.boundingClientRect.top);
+      if(visible[0]){
+        const y = visible[0].target.getAttribute('data-year-anchor');
+        updateYearRailActive(y);
+      }
+    }, {rootMargin:"-64px 0px -70% 0px", threshold: [0,1]});
+    function observeYears(){
+      io.disconnect();
+      yearAnchors().forEach(el=> io.observe(el));
+    }
+    observeYears();
+
+    // ==== 6) 灯箱 ====
+    const dlg=document.getElementById('dlg'), big=document.getElementById('big'), closeBtn=document.getElementById('closeBtn');
+    let currentPhotos=[], currentIndex=-1;
+    document.getElementById('timeline').addEventListener('click', (e)=>{
+      const btn=e.target.closest('button[data-view]'); if(!btn) return;
+      const id=btn.dataset.view; const trip=TRIPS.find(x=>x.id===id); if(!trip) return;
+      currentPhotos=[trip.cover, ...(trip.gallery||[])].filter(Boolean); currentIndex=0;
+      showPhoto(currentIndex);
+      if(typeof dlg.showModal==='function'){ dlg.showModal(); } else { alert('浏览器不支持 <dialog>'); }
+    });
+    function showPhoto(i){ const src=currentPhotos[i]||''; big.src=src; big.alt='旅行照片 '+(i+1); }
+    closeBtn.addEventListener('click', ()=> dlg.close());
+    dlg.addEventListener('close', ()=> { big.src=''; currentPhotos=[]; currentIndex=-1; });
+    addEventListener('keydown', (e)=>{
+      if(!dlg.open) return;
+      if(e.key==='ArrowRight'){ e.preventDefault(); currentIndex=(currentIndex+1)%currentPhotos.length; showPhoto(currentIndex); }
+      if(e.key==='ArrowLeft'){ e.preventDefault(); currentIndex=(currentIndex-1+currentPhotos.length)%currentPhotos.length; showPhoto(currentIndex); }
+      if(e.key==='Escape'){ dlg.close(); }
+    });
+
+    // ==== 7) 导入/导出 ====
+    const exportBtn=document.getElementById('exportBtn'), importFile=document.getElementById('importFile');
+    exportBtn.addEventListener('click', ()=>{
+      const blob=new Blob([JSON.stringify(TRIPS,null,2)], {type:'application/json'});
+      const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='trips.json'; a.click(); URL.revokeObjectURL(url);
+    });
+    importFile.addEventListener('change', async ()=>{
+      const f=importFile.files[0]; if(!f) return;
+      try{
+        const text=await f.text(); const data=JSON.parse(text);
+        if(!Array.isArray(data)) throw new Error('JSON 必须是数组');
+        data.forEach(x=>{
+          if(!x.id || !x.date || !x.title || !x.scope) throw new Error('缺少必填字段 id/date/title/scope');
+          if(x.scope!=='国内' && x.scope!=='国外') throw new Error('scope 只能是 “国内” 或 “国外”');
+          if(x.scope==='国内' && !x.province) throw new Error('国内记录必须提供 province（省份）');
+        });
+        // 替换数据
+        TRIPS.splice(0, TRIPS.length, ...data);
+        // 重建年份/省份/时间轴
+        const ys = Array.from(new Set(TRIPS.map(t=>t.date.slice(0,4)))).sort((a,b)=>b-a);
+        years.splice(0, years.length, ...ys);
+        yearSel.innerHTML = '<option value="all">全部年份</option>';
+        years.forEach(y=>{ const opt=document.createElement('option'); opt.value=y; opt.textContent=y; yearSel.appendChild(opt); });
+        buildProvinces(); buildYearRail();
+        state.year='all'; state.scope='全部'; state.province='全部'; state.q='';
+        document.getElementById('q').value='';
+        scopeWrap.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+        scopeWrap.querySelector('[data-scope="全部"]')?.classList.add('active');
+        provBar.hidden = true;
+        render(true); observeYears();
+        alert('导入成功！');
+      }catch(err){ alert('导入失败：'+err.message); }
+      finally{ importFile.value=''; }
+    });
+  </script>
+</body>
+</html>
