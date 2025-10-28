@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>我的旅行时间线</title>
-  <meta name="description" content="按时间记录我的旅行足迹：日期、地区与照片。"/>
+  <meta name="description" content="按时间记录我的旅行足迹：月份、地区与照片。"/>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='80'>🗺️</text></svg>">
   <style>
     :root{
@@ -93,7 +93,7 @@
     <section class="hero">
       <div class="container">
         <h1>按时间记录我的旅行</h1>
-        <p>仅区分“国内 / 国外”。国内支持按省份精确筛选；点击下方时间轴可跳转到对应年份。</p>
+        <p>仅区分“国内 / 国外”。国内支持按省份精确筛选；点击下方时间轴可跳转到对应年份或月份。</p>
       </div>
     </section>
 
@@ -122,7 +122,7 @@
     <div class="year-rail-wrap">
       <div class="container">
         <div id="yearRail" class="year-rail" role="tablist" aria-label="年份时间轴">
-          <!-- JS 渲染年份 pill -->
+          <!-- JS 渲染年份与月份 pill -->
         </div>
       </div>
     </div>
@@ -143,7 +143,7 @@
   <footer>
     <div class="container" style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap">
       <span>© <span id="year"></span> 你的名字</span>
-      <span>时间线 · 国内/国外 + 省份筛选 · 年份跳转</span>
+      <span>时间线 · 国内/国外 + 省份筛选 · 年月跳转</span>
     </div>
   </footer>
 
@@ -151,14 +151,12 @@
     // 年份
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ==== 1) 旅行数据（已移除 location 与 tags）====
-    // 必填：id, date(YYYY-MM-DD), title, scope('国内'|'国外')
-    // 可选：province(仅国内), country(仅国外), cover, gallery[], note
+    // ==== 1) 旅行数据（已修改 date 只精确到月份）====
     const TRIPS = [
-      { id:"2024-chengdu", date:"2024-10-03", title:"成都的慢下午", scope:"国内", province:"四川", cover:"assets/chengdu.jpg", gallery:["assets/chengdu1.jpg"], note:"在巷口闻到花椒与雨味。" },
-      { id:"2024-qingdao", date:"2024-07-18", title:"青岛海风",     scope:"国内", province:"山东", cover:"assets/qingdao.jpg", gallery:["assets/qingdao1.jpg","assets/qingdao2.jpg"] },
-      { id:"2023-tokyo",   date:"2023-04-12", title:"春日东京与镰仓", scope:"国外", country:"日本", cover:"assets/tokyo.jpg", gallery:["assets/tokyo1.jpg","assets/tokyo2.jpg"] },
-      { id:"2022-alps",    date:"2022-07-21", title:"阿尔卑斯徒步",   scope:"国外", country:"瑞士", cover:"assets/alps.jpg", gallery:["assets/alps1.jpg","assets/alps2.jpg","assets/alps3.jpg"] }
+      { id:"2024-chengdu", date:"2024-10", title:"成都的慢下午", scope:"国内", province:"四川", cover:"assets/chengdu.jpg", gallery:["assets/chengdu1.jpg"], note:"在巷口闻到花椒与雨味。" },
+      { id:"2024-qingdao", date:"2024-07", title:"青岛海风",     scope:"国内", province:"山东", cover:"assets/qingdao.jpg", gallery:["assets/qingdao1.jpg","assets/qingdao2.jpg"] },
+      { id:"2023-tokyo",   date:"2023-04", title:"春日东京与镰仓", scope:"国外", country:"日本", cover:"assets/tokyo.jpg", gallery:["assets/tokyo1.jpg","assets/tokyo2.jpg"] },
+      { id:"2022-alps",    date:"2022-07", title:"阿尔卑斯徒步",   scope:"国外", country:"瑞士", cover:"assets/alps.jpg", gallery:["assets/alps1.jpg","assets/alps2.jpg","assets/alps3.jpg"] }
     ];
 
     // ==== 2) 状态 ====
@@ -171,7 +169,7 @@
     const yearRail = document.getElementById('yearRail');
 
     // 年份列表
-    const years = Array.from(new Set(TRIPS.map(t=>t.date.slice(0,4)))).sort((a,b)=>b-a);
+    const years = Array.from(new Set(TRIPS.map(t=>t.date.slice(0,7)))).sort((a,b)=>b-a);
     years.forEach(y=>{ const opt=document.createElement('option'); opt.value=y; opt.textContent=y; yearSel.appendChild(opt); });
 
     // 范围芯片
@@ -260,7 +258,7 @@
       }
       let curYear=null;
       data.forEach(t=>{
-        const y=t.date.slice(0,4);
+        const y=t.date.slice(0,7); // 只保留到年-月
         if(curYear!==y){
           curYear=y;
           const tag=document.createElement('div'); tag.className='year'; tag.textContent=y;
@@ -295,7 +293,6 @@
       pills.forEach(p=>p.classList.toggle('active', p.dataset.year===activeYear));
     }
     const io = new IntersectionObserver(entries=>{
-      // 找到最靠上的可见年份
       const visible = entries.filter(e=>e.isIntersecting).sort((a,b)=> a.boundingClientRect.top - b.boundingClientRect.top);
       if(visible[0]){
         const y = visible[0].target.getAttribute('data-year-anchor');
@@ -347,7 +344,7 @@
         // 替换数据
         TRIPS.splice(0, TRIPS.length, ...data);
         // 重建年份/省份/时间轴
-        const ys = Array.from(new Set(TRIPS.map(t=>t.date.slice(0,4)))).sort((a,b)=>b-a);
+        const ys = Array.from(new Set(TRIPS.map(t=>t.date.slice(0,7)))).sort((a,b)=>b-a);
         years.splice(0, years.length, ...ys);
         yearSel.innerHTML = '<option value="all">全部年份</option>';
         years.forEach(y=>{ const opt=document.createElement('option'); opt.value=y; opt.textContent=y; yearSel.appendChild(opt); });
@@ -365,3 +362,4 @@
   </script>
 </body>
 </html>
+
