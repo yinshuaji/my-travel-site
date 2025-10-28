@@ -155,7 +155,7 @@
     // 年份
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ==== 1) 旅行数据（已去掉 note 字段，并修改图片路径）====
+    // 旅行数据
     const TRIPS = [
       { id:"201109-hangzhou", date:"2011-09", title:"杭州", scope:"国内", province:"浙江", cover:"images/201109杭州3.jpg", gallery:["images/201109杭州1.jpg","images/201109杭州2.jpg"] },
       { id:"201410-tianjin", date:"2014-10", title:"天津", scope:"国内", province:"天津", cover:"images/201410天津3.JPG", gallery:["images/201410天津3.JPG","images/201410天津1.JPG","images/201410天津2.JPG","images/201410天津3.JPG","images/201410天津4.JPG"] },
@@ -185,7 +185,7 @@
     years.forEach(y=>{ const opt=document.createElement('option'); opt.value=y; opt.textContent=y; yearSel.appendChild(opt); });
 
     // 范围芯片
-    ['全部','国内','国外'].forEach(s=>{
+    ['全部','国内','国外'].forEach(s=>{ 
       const b=document.createElement('button');
       b.className='chip'+(s==='全部'?' active':'');
       b.textContent=s; b.dataset.scope=s;
@@ -217,10 +217,12 @@
     }
     buildYearRail();
 
-    // ==== 3) 交互 ====
+    // ==== 3) 交互 ====  
     document.getElementById('q').addEventListener('input', (e)=>{ state.q=(e.target.value||'').toLowerCase().trim(); render(); });
     yearSel.addEventListener('change', ()=>{ state.year=yearSel.value; render(true); });
-    scopeWrap.addEventListener('click', (e)=>{ const btn=e.target.closest('button.chip'); if(!btn) return;
+    scopeWrap.addEventListener('click', (e)=>{ 
+      const btn=e.target.closest('button.chip'); 
+      if(!btn) return;
       scopeWrap.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
       btn.classList.add('active'); state.scope=btn.dataset.scope;
       const showProv = state.scope==='国内';
@@ -228,13 +230,15 @@
       state.province='全部';
       if(showProv){
         provWrap.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
-        const first = provWrap.querySelector('[data-province="全部"]'); if(first) first.classList.add('active');
+        const first = provWrap.querySelector('[data-province="全部"]'); 
+        if(first) first.classList.add('active');
       }
       render(true); 
     });
 
-    provWrap.addEventListener('click', (e)=>{
-      const btn=e.target.closest('button.chip'); if(!btn) return;
+    provWrap.addEventListener('click', (e)=>{ 
+      const btn=e.target.closest('button.chip'); 
+      if(!btn) return;
       provWrap.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
       btn.classList.add('active'); state.province=btn.dataset.province;
       render(true);
@@ -242,7 +246,8 @@
 
     // 时间轴点击跳转
     yearRail.addEventListener('click', (e)=>{
-      const btn=e.target.closest('button.year-pill'); if(!btn) return;
+      const btn=e.target.closest('button.year-pill'); 
+      if(!btn) return;
       const targetYear = btn.dataset.year;
       const anchor = document.querySelector(`[data-year-anchor="${targetYear}"]`);
       if(anchor){ anchor.scrollIntoView({behavior:'smooth', block:'start'}); }
@@ -259,7 +264,7 @@
       });
     }
 
-    // ==== 4) 渲染 ====
+    // ==== 4) 渲染 ====  
     function render(rebuildAnchors=false){
       const wrap = document.getElementById('timeline');
       wrap.innerHTML='';
@@ -297,7 +302,7 @@
     }
     render(true);
 
-    // ==== 5) 时间轴滚动高亮（IntersectionObserver）====
+    // ==== 5) 时间轴滚动高亮（IntersectionObserver）====  
     const yearAnchors = () => Array.from(document.querySelectorAll('[data-year-anchor]'));
     function updateYearRailActive(activeYear){
       const pills = Array.from(yearRail.querySelectorAll('.year-pill'));
@@ -316,7 +321,7 @@
     }
     observeYears();
 
-    // ==== 6) 灯箱（Lightbox）功能 ====
+    // ==== 6) 灯箱（Lightbox）功能 ====  
     const dlg = document.getElementById('dlg'), big = document.getElementById('big'), closeBtn = document.getElementById('closeBtn');
     let currentPhotos = [], currentIndex = -1;
 
@@ -345,6 +350,7 @@
 
     // 显示当前索引的图片
     function showPhoto(i) {
+      if (i < 0 || i >= currentPhotos.length) return; // 确保索引在范围内
       const src = currentPhotos[i] || ''; 
       big.src = src; 
       big.alt = '旅行照片 ' + (i + 1);
@@ -353,14 +359,7 @@
     // 关闭灯箱
     closeBtn.addEventListener('click', () => dlg.close());
 
-    // 监听灯箱关闭事件，清空图片
-    dlg.addEventListener('close', () => { 
-      big.src = ''; 
-      currentPhotos = []; 
-      currentIndex = -1; 
-    });
-
-    // 使用键盘左右方向键切换图片
+    // 切换图片
     addEventListener('keydown', (e) => {
       if (!dlg.open) return;
       if (e.key === 'ArrowRight') { 
@@ -380,6 +379,7 @@
   </script>
 </body>
 </html>
+
 
 
 
