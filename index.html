@@ -151,12 +151,14 @@
     // 年份
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ==== 1) 旅行数据（已修改 date 只精确到月份）====
+    // ==== 1) 旅行数据（已去掉 note 字段，并修改图片路径）====
     const TRIPS = [
-      { id:"2011-hangzhou", date:"2011-09", title:"杭州 浙江大学", scope:"国内", province:"浙江", cover:"images/201109杭州3.jpg", gallery:["images/201109杭州3.jpg","images/201109杭州1.jpg","images/201109杭州2.jpg"] },
-      { id:"2024-qingdao", date:"2024-07", title:"青岛海风",     scope:"国内", province:"山东", cover:"assets/qingdao.jpg", gallery:["assets/qingdao1.jpg","assets/qingdao2.jpg"] },
-      { id:"2023-tokyo",   date:"2023-04", title:"春日东京与镰仓", scope:"国外", country:"日本", cover:"assets/tokyo.jpg", gallery:["assets/tokyo1.jpg","assets/tokyo2.jpg"] },
-      { id:"2022-alps",    date:"2022-07", title:"阿尔卑斯徒步",   scope:"国外", country:"瑞士", cover:"assets/alps.jpg", gallery:["assets/alps1.jpg","assets/alps2.jpg","assets/alps3.jpg"] }
+      { id:"201109-hangzhou", date:"2011-09", title:"杭州游玩", scope:"国内", province:"浙江", cover:"images/hangzhou.jpg", gallery:["images/hangzhou1.jpg","images/hangzhou2.jpg"] },
+      { id:"201410-tianjin", date:"2014-10", title:"天津美食", scope:"国内", province:"天津", cover:"images/tianjin.jpg", gallery:["images/tianjin1.jpg","images/tianjin2.jpg"] },
+      { id:"201502-harbin", date:"2015-02", title:"哈尔滨冰雪节", scope:"国内", province:"黑龙江", cover:"images/harbin.jpg", gallery:["images/harbin1.jpg","images/harbin2.jpg"] },
+      { id:"201508-changzhou", date:"2015-08", title:"常州水上乐园", scope:"国内", province:"江苏", cover:"images/changzhou.jpg", gallery:["images/changzhou1.jpg","images/changzhou2.jpg"] },
+      { id:"201508-nanjing", date:"2015-08", title:"南京旅游", scope:"国内", province:"江苏", cover:"images/nanjing.jpg", gallery:["images/nanjing1.jpg","images/nanjing2.jpg"] },
+      { id:"201602-yancheng", date:"2016-02", title:"盐城湿地公园", scope:"国内", province:"江苏", cover:"images/yancheng.jpg", gallery:["images/yancheng1.jpg","images/yancheng2.jpg"] }
     ];
 
     // ==== 2) 状态 ====
@@ -241,7 +243,7 @@
         const yOk = state.year==='all' || t.date.startsWith(state.year);
         const sOk = state.scope==='全部' || t.scope===state.scope;
         const pOk = !(state.scope==='国内') || state.province==='全部' || t.province===state.province;
-        const hay = (t.title+' '+(t.note||'')+' '+(t.province||'')+' '+(t.country||'')).toLowerCase();
+        const hay = (t.title+' '+(t.province||'')+' '+(t.country||'')).toLowerCase();
         const qOk = !state.q || hay.includes(state.q);
         return yOk && sOk && pOk && qOk;
       });
@@ -274,7 +276,6 @@
           <div class="meta">${metaPieces.join(' · ')}</div>
           <h3>${t.title}</h3>
           <div class="thumb"><img src="${t.cover||''}" alt="${t.title} 封面" loading="lazy"></div>
-          ${t.note ? `<p style="margin-top:8px">${t.note}</p>` : ''}
           <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
             <button class="btn" data-view="${t.id}">查看照片（${(t.gallery||[]).length || 1}）</button>
           </div>
@@ -362,5 +363,7 @@
   </script>
 </body>
 </html>
+
+
 
 
