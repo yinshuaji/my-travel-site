@@ -209,23 +209,25 @@
   </footer>
 
   <script>
-    // 默认的用户名和密码
-    const DEFAULT_USERNAME = "yinshuaji";
-    const DEFAULT_PASSWORD = "123456";
+  document.addEventListener("DOMContentLoaded", function() {
+  // 默认的用户名和密码
+  const DEFAULT_USERNAME = "yinshuaji";
+  const DEFAULT_PASSWORD = "123456";
 
-    // 登录功能
-    document.getElementById("loginBtn").addEventListener("click", function() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+  // 登录功能
+  document.getElementById("loginBtn").addEventListener("click", function() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
-  if (username === DEFAULT_USERNAME && password === DEFAULT_PASSWORD) {
-    // 登录成功，显示主页面，隐藏登录界面
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("main").style.display = "block";
-  } else {
-    // 登录失败，显示错误信息
-    document.getElementById("error").style.display = "block";
-  }
+    if (username === DEFAULT_USERNAME && password === DEFAULT_PASSWORD) {
+      // 登录成功，显示主页面，隐藏登录界面
+      document.getElementById("loginPage").style.display = "none";
+      document.getElementById("main").style.display = "block";
+    } else {
+      // 登录失败，显示错误信息
+      document.getElementById("error").style.display = "block";
+    }
+  });
 });
     
     // 年份
@@ -475,6 +477,7 @@
   </script>
 </body>
 </html>
+
 
 
 
