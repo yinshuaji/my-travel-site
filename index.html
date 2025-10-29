@@ -81,9 +81,7 @@
     /* 控制灯箱按钮位置 */
     .lightbox .btns { display: flex; justify-content: space-between; width: 100%; }
     .btns button { background: #0f172b; color: #e6edf3; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
-  </style>
-</head>
-<body>
+
   <a class="skip" href="#main">跳到主内容</a>
 
    /* 登录样式 */
@@ -210,6 +208,25 @@
   </footer>
 
   <script>
+    // 默认的用户名和密码
+    const DEFAULT_USERNAME = "yinshuaji";
+    const DEFAULT_PASSWORD = "123456";
+
+    // 登录功能
+    function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      if (username === DEFAULT_USERNAME && password === DEFAULT_PASSWORD) {
+        // 登录成功，显示主页面，隐藏登录界面
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("main").style.display = "block";
+      } else {
+        // 登录失败，显示错误信息
+        document.getElementById("error").style.display = "block";
+      }
+    }
+    
     // 年份
     document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -457,6 +474,7 @@
   </script>
 </body>
 </html>
+
 
 
 
