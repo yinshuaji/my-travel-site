@@ -139,6 +139,7 @@
     <p id="error" style="color: red; display: none;">用户名或密码错误，请重试。</p>
   </div>
 
+  <div id="main" style="display:none;">
   <header>
     <div class="container nav" aria-label="主导航">
       <div class="brand"><div class="logo" aria-hidden="true">✦</div><span>我的旅行时间线</span></div>
@@ -148,7 +149,7 @@
     </div>
   </header>
 
-  <main id="main">
+  <main>
     <section class="hero">
       <div class="container">
         <h1>按时间记录我的旅行</h1>
@@ -233,7 +234,7 @@
     // 旅行数据
      const TRIPS = [
       { id:"201109-hangzhou", date:"2011-09", title:"杭州", scope:"国内", province:"浙江", cover:"images/201109杭州3.jpg", gallery:["images/201109杭州1.jpg","images/201109杭州2.jpg"] },
-      { id:"201410-tianjin", date:"2014-10", title:"天津", scope:"国内", province:"天津", cover:"images/201410天津3.JPG", gallery:["images/201410天津1.JPG","images/201410天津2.JPG","images/201410天津3.JPG","images/201410天津4.JPG"] },
+      { id:"201410-tianjin", date:"2014-10", title:"天津", scope:"国内", province:"天津", cover:"images/201410天津3.JPG", gallery:["images/201410天津1.JPG","images/201410天津4.JPG","images/201410天津5.JPG" },
       { id:"201502-harbin", date:"2015-02", title:"哈尔滨冰雪节", scope:"国内", province:"黑龙江", cover:"images/201502哈尔滨1.JPG", gallery:["images/201502哈尔滨2.JPG","images/201502哈尔滨3.JPG","images/201502哈尔滨4.JPG"] },
       { id:"201508-changzhou", date:"2015-08", title:"常州水上乐园", scope:"国内", province:"江苏", cover:"images/201508南京、常州3.jpg", gallery:["images/201508南京、常州3.jpg"] },
       { id:"201508-nanjing", date:"2015-08", title:"南京", scope:"国内", province:"江苏", cover:"images/201508南京、常州2.jpg", gallery:["images/201508南京、常州2.jpg","images/201508南京、常州4.jpg","images/201508南京、常州5.jpg"] },
@@ -249,7 +250,7 @@
       { id:"202307-shenyang", date:"2023-07", title:"沈阳", scope:"国内", province:"辽宁", cover:"images/202307沈阳1.jpg", gallery:["images/202307沈阳2.jpg","images/202307沈阳3.jpg"] },
       { id:"202310-wuxi", date:"2023-10", title:"无锡", scope:"国内", province:"江苏", cover:"images/202310无锡2.jpg", gallery:["images/202310无锡1.jpg","images/202310无锡3.jpg"] },
       { id:"202401-guangzhou", date:"2024-01", title:"广州", scope:"国内", province:"广东", cover:"images/202401广州7.jpg", gallery:["images/202401广州8.jpg","images/202401广州3.jpg","images/202401广州4.jpg","images/202401广州6.jpg"] },
-      { id:"201608-korea", date:"2016-08", title:"韩国", scope:"国外", province:"", cover:"images/201608韩国游轮游1.JPG", gallery:["images/201608韩国游轮游2.JPG","201608韩国游轮游3.JPG"] }
+      { id:"201608-korea", date:"2016-08", title:"韩国", scope:"国外", province:"", cover:"images/201608韩国游轮游1.JPG", gallery:["images/201608韩国游轮游2.JPG","images/201608韩国游轮游3.JPG","images/201608韩国游轮游4.JPG"] }
     ];
 
     // ==== 2) 状态 ====  
@@ -474,6 +475,7 @@
   </script>
 </body>
 </html>
+
 
 
 
