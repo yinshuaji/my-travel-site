@@ -466,6 +466,14 @@
       const src = currentPhotos[i] || ''; 
       big.src = src; 
       big.alt = '旅行照片 ' + (i + 1);
+
+       // 强制更新图片的尺寸
+       const img = big;
+       img.onload = function() {
+       // 图片加载完成后自动调整大小
+       img.style.maxWidth = '100%';
+       img.style.maxHeight = '100%';
+      };
     }
 
     // 关闭灯箱
@@ -487,6 +495,7 @@
   </script>
 </body>
 </html>
+
 
 
 
