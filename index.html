@@ -464,9 +464,10 @@
     // 显示当前索引的图片
     function showPhoto(i) {
       if (i < 0 || i >= currentPhotos.length) return; 
-      const src = currentPhotos[i] || ''; 
-      big.src = src; 
-      big.alt = '旅行照片 ' + (i + 1);
+      const src = currentPhotos[i]; // 获取当前图片路径
+      const img = big; // 获取图片元素
+      img.src = src;  // 设置图片路径
+      img.alt = '旅行照片 ' + (i + 1);  // 设置图片的描述
 
       // 获取旅行的照片总数（包括 cover 和 gallery）
       const tripId = currentPhotos[i].split('/')[0];  // 获取旅行 ID
@@ -479,8 +480,6 @@
         button.textContent = `查看照片（${imageCount || 1}）`; // 更新数字
       }
       
-       // 强制更新图片的尺寸
-       const img = big;
        img.onload = function() {
        // 图片加载完成后自动调整大小
        img.style.maxWidth = '100%';
@@ -509,6 +508,7 @@
   </script>
 </body>
 </html>
+
 
 
 
