@@ -78,6 +78,7 @@
       max-width: 100%;
       max-height: 100%;
       display: flex;
+      flex-direction: column; /* 使用 column 布局，使按钮在图片下方 */
       justify-content: center;  /* 水平居中 */
       align-items: center;  /* 垂直居中 */
       background-color: rgba(0, 0, 0, 0.8);  /* 灯箱背景 */
@@ -92,13 +93,48 @@
       max-width: 100%;
       max-height: 100%;
     }
+    
+    .lightbox .bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 8px 12px;
+      background: #0f172b;
+      border-bottom: 1px solid var(--border);
+    }
 
-    footer{padding:28px 0; color:#9fb0c9; border-top:1px solid var(--border)}
+    .close {
+      background: #0e1630;
+      color: #e6edf3;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
 
-    /* 控制灯箱按钮位置 */
-    .lightbox .btns { display: flex; justify-content: space-between; width: 100%; }
-    .btns button { background: #0f172b; color: #e6edf3; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+    .lightbox .btns {
+      display: flex;
+      justify-content: space-between; /* 按钮水平间隔 */
+      width: 100%;
+      padding: 10px 0;
+      background: #0f172b;
+      border-top: 1px solid var(--border);
+      margin-top: 10px; /* 为了和图片保持间隔 */
+    }
 
+    .lightbox .btns button {
+      background: #0f172b;
+      color: #e6edf3;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .lightbox .btns button:hover {
+      background: #9fe6a0; /* 鼠标悬停时改变按钮颜色 */
+    }
+    
    /* 登录样式 */
     .login-container {
       max-width: 400px;
@@ -510,6 +546,7 @@
   </script>
 </body>
 </html>
+
 
 
 
