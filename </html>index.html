@@ -493,10 +493,6 @@
     }
     observeYears();
 
-    // ==== 6) 灯箱（Lightbox）功能 ====  
-    const dlg = document.getElementById('dlg'), big = document.getElementById('big'), closeBtn = document.getElementById('closeBtn');
-    let currentPhotos = [], currentIndex = -1;
-
     // 监听“查看照片”按钮点击事件
     document.getElementById('timeline').addEventListener('click', (e) => {
       const btn = e.target.closest('button[data-view]'); 
@@ -530,8 +526,16 @@
       dlg.showModal();
     }
 
-    // 关闭灯箱
-    closeBtn.addEventListener('click', () => dlg.close());
+   document.addEventListener("DOMContentLoaded", function() {
+  // 获取对话框和关闭按钮
+  const dlg = document.getElementById('dlg');
+  const closeBtn = document.getElementById('closeBtn');
+  
+  // 确保点击关闭按钮时关闭对话框
+  closeBtn.addEventListener('click', function() {
+    dlg.close();  // 正确关闭对话框
+  });
+});
 
     // 切换图片
     const prevBtn = document.getElementById('prevBtn');
@@ -549,6 +553,7 @@
   </script>
 </body>
 </html>
+
 
 
 
