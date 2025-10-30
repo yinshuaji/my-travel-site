@@ -485,7 +485,9 @@
        // 图片加载完成后自动调整大小
        img.style.maxWidth = '100%';
        img.style.maxHeight = '100%';
+      img.style.objectFit = 'contain';  // 使用 contain 确保图片完整显示
       };
+      dlg.showModal();
     }
 
     // 关闭灯箱
@@ -507,6 +509,7 @@
   </script>
 </body>
 </html>
+
 
 
 
