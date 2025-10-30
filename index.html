@@ -82,8 +82,6 @@
     .lightbox .btns { display: flex; justify-content: space-between; width: 100%; }
     .btns button { background: #0f172b; color: #e6edf3; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
 
-  <a class="skip" href="#main">跳到主内容</a>
-
    /* 登录样式 */
     .login-container {
       max-width: 400px;
@@ -144,7 +142,6 @@
     <div class="container nav" aria-label="主导航">
       <div class="brand"><div class="logo" aria-hidden="true">✦</div><span>我的旅行时间线</span></div>
       <nav aria-label="辅助链接">
-        <!-- 导入和导出功能已删除 -->
       </nav>
     </div>
   </header>
@@ -469,17 +466,6 @@
       img.src = src;  // 设置图片路径
       img.alt = '旅行照片 ' + (i + 1);  // 设置图片的描述
 
-      // 获取旅行的照片总数（包括 cover 和 gallery）
-      const tripId = currentPhotos[i].split('/')[0];  // 获取旅行 ID
-      const trip = TRIPS.find(t => t.id === tripId);
-      const imageCount = (trip.gallery || []).length + (trip.cover ? 1 : 0);
-
-      // 找到“查看照片”按钮，并更新按钮文本
-      const button = document.querySelector(`[data-view="${trip.id}"]`);
-      if (button) {
-        button.textContent = `查看照片（${imageCount || 1}）`; // 更新数字
-      }
-      
        img.onload = function() {
        // 图片加载完成后自动调整大小
        img.style.maxWidth = '100%';
@@ -508,6 +494,7 @@
   </script>
 </body>
 </html>
+
 
 
 
